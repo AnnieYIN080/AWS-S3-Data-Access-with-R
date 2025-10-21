@@ -33,10 +33,11 @@ This approach first downloads the file locally using AWS CLI, then reads the dow
         `aws s3 cp s3://your-bucket/super_large_dataset.csv -|head -n 1000 > sample_data_1k.csv`<br>
      
      - Then in R:<br>
-               ```
-               df <- read.csv("sample_data_1k.csv")
-               print(head(df)) 
-               ```
+       ```
+       df <- read.csv("sample_data_1k.csv")
+       print(head(df))
+       ```
+               
      <br> after reviewing the file, duckdb is recommended to filter columns you need and then save the filtered file into s3 bucket.<br>
 
 
