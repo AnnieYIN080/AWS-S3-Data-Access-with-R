@@ -2,10 +2,9 @@
 This repository demonstrates how to read data from AWS S3 using R, showcasing multiple methods including **_direct programmatic access_** and **_Bash-based download_** scripts.<br>
 
 **Key point:** <br>
-Check file size in bash:
-`ls -lh large_file.csv` 
-or chech folder size:
-`du -sh my_data_folder/`<br>
+Check file size in bash：`ls -lh large_file.csv` <br>
+Check folder "disk usage" size: `du -sh my_data_folder/`<br>
+Check system "disk free" space `df -h ./`<br>
 
 1. Method 1: Pure R (Using Python’s SageMaker via reticulate)
 This approach leverages the `reticulate` package to call Python’s sagemaker utilities from R and stream S3 files directly into R objects.<br>
