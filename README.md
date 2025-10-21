@@ -6,11 +6,13 @@ Check file size in bash：`ls -lh large_file.csv` <br>
 Check folder "disk usage" size: `du -sh my_data_folder/`<br>
 Check system "disk free" space `df -h ./`<br>
 
-1. Method 1: Pure R (Using Python’s SageMaker via reticulate)
+1. Method 1: (small file)<br>
+**Pure R (Using Python’s SageMaker via reticulate)** <br>
 This approach leverages the `reticulate` package to call Python’s sagemaker utilities from R and stream S3 files directly into R objects.<br>
 
 
-2. Method 2: Bash Download + R Read
+3. Method 2: (small file)<br>
+**Bash Download + R Read** <br>
 This approach first downloads the file locally using AWS CLI or aws.s3 package, then reads the downloaded file using R.<br>
 
      - Using AWS CLI in Bash<br>
@@ -21,16 +23,17 @@ This approach first downloads the file locally using AWS CLI or aws.s3 package, 
           print(head(df)) 
           ```
 
-
 For the open resource, the methods below can also be helpful<br>
 
-3. Method 3: Use the aws.s3 package (recommended)
+3. Method 3: (RAM limit) <br>
+**Use the aws.s3 package (recommended)** <br>
 
 Aws.s3 is a member of the cloudyr suite officially supported by aws. Use AWS API to directly read and write S3. <br>
 Ps, not all the environments can set aws credentials by yourself. Please check and confirm before use this method.<br>
 
 
-4. Method 4: Use the arrow package (Efficient reading and writing of Parquet and CSV)<br>
+4. Method 4: (RAM limit) <br>
+**Use the arrow package (Efficient reading and writing of Parquet and CSV)<br>**
 Arrow supports native S3 protocol reading and is suitable for large-scale distributed data.<br>
 ```
 library(arrow)
@@ -38,3 +41,6 @@ ds <- read_csv_arrow("s3://your-bucket/path/to/data.csv")
 head(ds)
 ```
 
+5. Exploration for Out-of-Core <br>
+5.1 For polars in R `rpolars`
+5.2 For duckdb in R `duckdb`
