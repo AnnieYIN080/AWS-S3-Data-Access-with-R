@@ -10,44 +10,52 @@ library(DBI)
 library(tictoc)
 
 # --- 2. DuckDB SQL Processing ---
-
 # Connect to DuckDB database - in-memory is default
 con = dbConnect(duckdb())
+dbExecute(con, "INSTALL httpfs;")
+dbExecute(con, "LOAD httpfs;")
+dbExecute(con, "SET s3_region='ap-southeast-1';")
+dbExecute(con, "SET s3_access_key_id='YOUR_ACCESS_KEY';")
+dbExecute(con, "SET s3_secret_access_key='YOUR_SECRET_KEY';")
+```
+con = duckdb.connect() 
+con.execute("call load_aws_credentials()")
+```
 
 # DuckDB natively supports reading Parquet, CSV, etc.
+# Execute SQL query
 
-# Create a DuckDB table from R data frame
-# Create an R data frame for transfer
-data_r = data.frame(
-  A = 1:1000000,
-  B = rnorm(1000000),
-  C = sample(c("X", "Y", "Z"), 1000000, replace = TRUE)
-)
+tic("DuckDB SQL Query")
 
-tic("DuckDB Data Frame Load")
-dbWriteTable(con, "my_table", data_r)
+query <- "
+  SELECT *
+  FROM read_parquet('s3://your-bucket/path/to/data.parquet')
+  LIMIT 10;
+"
+
+result <- dbGetQuery(con, query)
 toc()
 
-# Execute SQL query
-tic("DuckDB SQL Query")
-result_db = dbGetQuery(con, "
+print(result)
+
+
+'''
+# The same with the codes below
+result = dbGetQuery(con, "
   SELECT 
     C, 
     COUNT(*) AS count, 
     AVG(B) AS mean_B, 
     SUM(A) AS sum_A 
-  FROM my_table
+  FROM read_parquet('s3://your-bucket/path/to/data.parquet')
   GROUP BY C
   ORDER BY C;
 ")
-toc()
-
-print("DuckDB Query Result:")
-print(result_db)
+'''
 
 #  DuckDB querying Parquet files directly
 # result_parquet_db = dbGetQuery(con, "SELECT COUNT(*) FROM read_parquet('data.parquet');")
 
 # Disconnect
 dbDisconnect(con, shutdown = TRUE)
-
+# con.close
